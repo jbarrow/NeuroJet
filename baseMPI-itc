@@ -1,0 +1,11 @@
+#!/bin/sh
+#PBS -l nodes=InsertBHere:ppn=2
+#PBS -l walltime=1:00:00
+#PBS -o InsertAHere.out
+#PBS -e InsertAHere.err
+#PBS -M abh2n@cs.virginia.edu
+#PBS -m n
+
+cd $PBS_O_WORKDIR
+
+mpiexec -comm mpich-p4  ~/tmpTestDirectory/NeuroJet-birch ~/tmpTestDirectory/InsertAHere.nj

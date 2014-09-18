@@ -1,0 +1,40 @@
+\documentclass[landscape]{article}
+% need to use ``xdvi -paper usr NeuroJet-depends.dvi'' to view and
+%    ``dvips -Ppdf -t landscape NeuroJet-depends.dvi'' to create ps file
+\usepackage{amsmath, setspace, epsfig, multirow, latexsym, amssymb, enumerate}
+\usepackage[all]{xy}
+\author{Ben Hocking}
+\title{Dependency Information for NeuroJet}
+\CompileMatrices
+
+\begin{document}
+\maketitle
+
+\section{Header Dependencies}
+\begin{displaymath}
+\entrymodifiers={}
+\SelectTips{cm}{}
+\xymatrix @-1pc {
+ *\txt{Level 0:} & *+[F-]{BindList.hpp} & *+[F-]{DendriteToSomaFilter.hpp}   & *+[F-]{DataTypes.hpp}                                                   & *+[F-]{Output.hpp}                 \\
+ *\txt{Level 1:} &                      &                                    & *+[F-]{ArgFuncts.hpp}     \ar[u] \ar[ur]                                &                                    \\
+ *\txt{Level 2:} &                      &                                    & *+[F-]{Noise.hpp}         \ar[u]                                        & *+[F-]{Symbols.hpp}  \ar[ul]       \\
+ *\txt{Level 3:} &                      &                                    & *+[F-]{ParallelRand.hpp}  \ar[u]                                        &                                    \\
+ *\txt{Level 4:} &                      &                                    & *+[F-]{Program.hpp}       \ar[u] \ar@/^1.5pc/[uuuull] \ar@/^2pc/[uuuul] & *+[F-]{Parallel.hpp} \ar[ul]       \\
+ *\txt{Level 5:} &                      & *+[F-]{WeightAnalysis.hpp} \ar[ur] & *+[F-]{ActiveConnect.hpp} \ar[u]                                        &                                    \\
+ *\txt{Level 6:} &                      &                                    & *+[F-]{User.hpp}          \ar[u] \ar[ul]                                &                                    \\
+ *\txt{Level 7:} &                      &                                    & *+[F-]{NeuroJet.hpp}      \ar[u] \ar@/_2pc/[uuur]                       &                                    \\
+}
+\end{displaymath}
+
+\section{Source Dependencies}
+
+All source files (.cpp extensions) include their corresponding header (.hpp) file.
+The following source files have additional header files:
+
+\begin{itemize}
+\item DendriteToSoma.cpp: Output.hpp
+\item Output.cpp: DataTypes.hpp
+\item Program.cpp: Algorithm.hpp Parallel.hpp Symbols.hpp
+\end{itemize}
+
+\end{document}

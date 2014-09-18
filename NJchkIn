@@ -1,0 +1,6 @@
+#!/usr/bin/perl
+print "Did all tests pass successfully? (y/n) ";
+chomp(my $ans = <STDIN>);
+if ($ans =~ /[yY]/) {
+   system('cvs', 'ci');
+}

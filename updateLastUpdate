@@ -1,0 +1,10 @@
+DT=`date`
+SEDSTR='s/Last changed on .*\"/Last changed on '
+SEDSTR=$SEDSTR$DT\"/g
+echo $SEDSTR > tmp.sed
+sed -f tmp.sed NeuroJet.cpp > NeuroJet.cpp.tmp
+SEDSTR='s/Last changed by .*\"/Last changed by '
+SEDSTR=$SEDSTR$LOGNAME\"/g
+echo $SEDSTR > tmp.sed
+sed -f tmp.sed NeuroJet.cpp.tmp > NeuroJet.cpp
+rm NeuroJet.cpp.tmp

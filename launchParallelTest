@@ -1,0 +1,27 @@
+LNAME=$USER
+THISDIR=`perl -e "use Cwd; print getcwd;"`
+THISLOCDIR=$LNAME@rr.med.virginia.edu:$THISDIR
+THISTESTDIR=$LNAME@rr.med.virginia.edu:/home/levylab/test_scripts
+SFNAME=$USER;
+if [ $SFNAME='abh2n' ]; then
+  SFNAME="hocking"
+fi
+
+# Sunfire
+
+# scp -p makeTmpNJ $SFNAME@sunfire1.cs.virginia.edu:~/
+# echo ssh -l $SFNAME sunfire1.cs.virginia.edu ./makeTmpNJ $THISLOCDIR $THISTESTDIR sunfire
+# ssh -l $SFNAME sunfire1.cs.virginia.edu ./makeTmpNJ $THISLOCDIR $THISTESTDIR sunfire
+
+# Birch
+
+BNAME=$USER
+# scp -p makeTmpNJ $BNAME@birch.itc.virginia.edu:~/
+# echo ssh -l $BNAME birch.itc.virginia.edu ./makeTmpNJ $THISLOCDIR $THISTESTDIR birch
+# ssh -l $BNAME birch.itc.virginia.edu ./makeTmpNJ $THISLOCDIR $THISTESTDIR birch
+
+# Dogwood
+
+scp -p makeTmpNJ $BNAME@dogwood.itc.virginia.edu:~/
+echo ssh -l $BNAME dogwood.itc.virginia.edu ./makeTmpNJ $THISLOCDIR $THISTESTDIR dogwood
+ssh -l $BNAME dogwood.itc.virginia.edu ./makeTmpNJ $THISLOCDIR $THISTESTDIR dogwood

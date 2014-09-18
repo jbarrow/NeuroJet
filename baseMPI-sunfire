@@ -1,0 +1,12 @@
+# Sun Grid Engine batch job script
+# Define shell
+#$ -S /bin/sh
+## Set processor requirements
+##$ -pe mpich InsertBHere
+# Set output and error files
+#$ -o InsertAHere.out
+#$ -e InsertAHere.err
+# Use the current working directory
+#$ -cwd
+
+/usr/centurion/bin/mpirun -np InsertBHere ~/tmpTestDirectory/NeuroJet-sunfire ~/tmpTestDirectory/InsertAHere.nj

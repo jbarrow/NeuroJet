@@ -1,0 +1,23 @@
+# This bash script is designed to run on a cluster
+TESTDIR=~/tmpTestDirectory
+case $# in
+3)  cd ~
+    # The following code creates a test_scripts subdirectory
+    mkdir -p $TESTDIR
+    cd $TESTDIR
+    chmod u+w *
+    scp -p $1/* .
+    scp -p -r $2 .
+    # The following code takes the abc out of xxx.abc.xxx.xxx
+    PNODE=`hostname | sed 's/.*\.\(.*\)\.\(.*\)\.\(.*\)/\1/'`
+    echo $PNODE
+    if [ $PNODE = 'itc' ]; then
+      . /etc/profile
+      . ~/.profile
+    fi
+    echo PATH=$PATH
+    echo make pTest-$3
+    make pTest-$3
+    ;;
+*)  echo makeTmpNJ requires 3 arguments \(received $#\): scp location of NeuroJet, scp location of test scripts, and name of host (e.g., dogwood)
+esac
