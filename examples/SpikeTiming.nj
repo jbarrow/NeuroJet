@@ -1,0 +1,117 @@
+@SetVar(
+	title			TestPreloadNetwork
+	Activity		0.03
+	ni			8000
+	KFB			0.15
+	KFF			0.013
+	K0			0.044
+	mu			0.005
+	Con			0.1
+	seed			1
+	Reset			0
+	ResetAct		0
+	alpha			0.95
+	NMDArise		1
+	riseFile		rise.txt
+	lambdaFB		0.1
+	spikeTimingRule		1
+	muSpike			0.002
+	spikeTzero		0
+	ruleFile		rule.txt
+)
+
+@SetVar(
+	filterFile		filter.txt
+	filterDecay		1
+	InterNeuronfilterFile	INfilter.txt
+)
+
+@CreateVar(
+	trials			200
+	PreloadActivity		0.0014
+	epsilonK0		0.05
+	delK0			0
+)
+
+@CreateAnalysis(
+	K0History			[ K0 ]
+	activity_testing		[ Activity AveTestAct  ]
+	activity_training		[ Activity AveTrainAct ]
+)
+
+@SeedRNG()
+@CreateNetwork(-low 0.39 -high 0.41 -dist uniform)
+
+%(j 1 ^(trials)) {
+	@ResetFiring()
+
+	# Make a preload sequence for the filter
+	@MakeRandSequence(-name PreloadSeq -len 5 -p ^(PreloadActivity) -Nstart 165)]
+
+	#@AppendData(-from 3 PreloadSeq1 PreloadSeq2 PreloadSeq3 -to PreloadSeq)
+
+	# Save the preload data for future analysis
+	@Test(-name PreloadSeq -time 5 -nocomp)
+
+	# Load a training sequence
+	@LoadData( -from TrainSeq_:^(j):.txt -to TrainSeq -buf 30000)
+
+	# Run train trial, interneuron controls activity.  Save Data.
+	@Train(-name TrainSeq -trials 1 -nocomp)
+
+	?If(exists[TrainSurface]) {
+		@AppendData( -type mat -from 2 TrainSurface TrainingActivity -to temp )
+		@CopyData(  -type mat -from temp -to TrainSurface )
+		@DeleteData( temp )
+	}
+	?If(~exists[TrainSurface]) {
+		@CopyData( -type mat -from TrainingActivity -to TrainSurface )
+	}
+
+	@SaveData(-from TrainingBuffer -to train_trial_z_:^(j):.dat -pad)
+
+	@ResetFiring()
+
+	# Make a preload sequence for the filter
+	@MakeRandSequence(-name PreloadSeq -len 5 -p ^(PreloadActivity) -Nstart 165)
+	@Test(-name PreloadSeq -time 5 -nocomp)
+
+	@LoadData( -from TestSeq.txt -to TestSeq -buf 30000)
+
+	@Test(-name TestSeq -time 540 -nocomp)
+
+	?If(exists[TestSurface]) {
+		@AppendData( -type mat -from 2 TestSurface TestingActivity -to temp )
+		@CopyData(  -type mat -from temp -to TestSurface )
+		@DeleteData( temp )
+	}
+	?If(~exists[TestSurface]) {
+		@CopyData( -type mat -from TestingActivity -to TestSurface )
+	}
+
+	@SaveData(-from TestingBuffer -to test_trial_z_:^(j):.dat -pad)
+
+	## Update Activity and K0 trackers
+	@Analysis(
+		K0History
+		activity_testing
+		activity_training
+	)
+
+	## Adjust K0
+	##  K0 = K0 + epsilonK0 * (trialactivity - Activity);
+	@SetVar(
+		delK0 ^Calc( [ ^(AveTrainAct) - ^(Activity) ] * ^(epsilonK0) )
+		K0 ^Calc( ^(K0) + ^(delK0) ) #
+	)
+
+	@DeleteData( TrainingBuffer )
+	@DeleteData( TestingBuffer )
+
+}
+
+@SaveData(-from TrainSurface -to trainsurface.ana -nopad)
+@SaveData(-from K0History -to K0History.ana -nopad)
+@SaveData(-from TestSurface -to testsurface.ana -nopad)
+@SaveData(-from activity_testing -to activity_testing.ana -nopad)
+@SaveData(-from activity_training -to activity_training.ana -nopad)
